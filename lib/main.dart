@@ -22,7 +22,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Vivian',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
+      theme: ThemeData(
+        fontFamily: 'Roboto',
+        scaffoldBackgroundColor: const Color(0xFFF5F6FA),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
+      ),
       home: const MyHomePage(),
     );
   }
@@ -137,6 +142,10 @@ class _MyHomePageState extends State<MyHomePage> {
   void _mostrarHistorial() {
     showModalBottomSheet(
       context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      backgroundColor: Colors.white,
       builder: (context) {
         return Column(
           mainAxisSize: MainAxisSize.min,
@@ -185,43 +194,73 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     Widget mainContent = Column(
       children: [
-        const SizedBox(height: 24),
+        const SizedBox(height: 12),
         Center(
-          child: Image.asset(
-            'assets/logo.jpeg',
-            width: 100,
-            height: 100,
+          child: ClipOval(
+            child: Image.asset(
+              'assets/logo.jpeg',
+              width: 90,
+              height: 90,
+              fit: BoxFit.cover,
+            ),
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 12),
         Expanded(
           child: Center(
             child: Container(
-              width: 200,
-              height: 200,
-              color: Colors.grey[300],
+              width: 220,
+              height: 220,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha((0.08 * 255).toInt()),
+                    blurRadius: 16,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
               child: Center(
                 child: Text(
                   _isPlaying
                       ? "Reproduciendo animación..."
                       : "Avatar de Unity (animaciones)",
+                  style: const TextStyle(fontSize: 16, color: Colors.black87),
+                  textAlign: TextAlign.center,
                 ),
               ),
             ),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Column(
             children: [
               Row(
                 children: [
-                  ElevatedButton(
-                    onPressed: _toggleRecording,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _isRecording ? Colors.red : null,
+                  Expanded(
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.easeInOut,
+                      child: ElevatedButton.icon(
+                        onPressed: _toggleRecording,
+                        icon: Icon(_isRecording ? Icons.stop : Icons.mic,
+                            color: Colors.white),
+                        label: Text(_isRecording ? "Detener" : "Audio"),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              _isRecording ? Colors.redAccent : Colors.blue,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          elevation: 2,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+                      ),
                     ),
-                    child: Text(_isRecording ? "Detener" : "Audio"),
                   ),
                   if (_isRecording)
                     Padding(
@@ -237,37 +276,74 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   const SizedBox(width: 8.0),
                   Expanded(
-                    child: TextField(
-                      controller: _textController,
-                      decoration: const InputDecoration(
-                        hintText: "Escribe tu mensaje aquí...",
-                        border: OutlineInputBorder(),
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    flex: 2,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withAlpha((0.06 * 255).toInt()),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
-                      textInputAction: TextInputAction.send,
-                      onSubmitted: (_) => _sendText(),
+                      child: TextField(
+                        controller: _textController,
+                        decoration: const InputDecoration(
+                          prefixIcon:
+                              Icon(Icons.message, color: Colors.blueGrey),
+                          hintText: "Escribe tu mensaje aquí...",
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 14),
+                        ),
+                        textInputAction: TextInputAction.send,
+                        onSubmitted: (_) => _sendText(),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 8.0),
-                  ElevatedButton(
-                    onPressed: _repeatAnimation,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _isPlaying ? Colors.green : null,
+                  Expanded(
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.easeInOut,
+                      child: ElevatedButton.icon(
+                        onPressed: _repeatAnimation,
+                        icon: Icon(_isPlaying ? Icons.stop : Icons.replay,
+                            color: Colors.white),
+                        label: Text(_isPlaying ? "Detener" : "Repetir"),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              _isPlaying ? Colors.green : Colors.deepPurple,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          elevation: 2,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+                      ),
                     ),
-                    child: Text(_isPlaying ? "Detener" : "Repetir"),
                   ),
                 ],
               ),
-              const SizedBox(height: 8.0),
+              const SizedBox(height: 10),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: _sendText,
-                  icon: const Icon(Icons.send),
-                  label: const Text("Enviar"),
+                  icon: const Icon(Icons.send, size: 22),
+                  label: const Text("Enviar", style: TextStyle(fontSize: 18)),
                   style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    backgroundColor: Colors.deepPurple,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    elevation: 2,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                 ),
               ),
@@ -279,34 +355,53 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Vivian"),
+        title:
+            const Text("Vivian", style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
+        backgroundColor: Colors.white,
+        elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.history),
+            icon: const Icon(Icons.history, color: Colors.deepPurple),
             tooltip: 'Ver historial',
             onPressed: _mostrarHistorial,
           ),
         ],
       ),
       body: _selectedIndex == 0 ? const AccountScreen() : mainContent,
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            label: "Cuenta",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.translate),
-            label: "Traductor",
-          ),
-        ],
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha((0.08 * 255).toInt()),
+              blurRadius: 8,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          currentIndex: _selectedIndex,
+          onTap: (index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
+          backgroundColor: Colors.white,
+          selectedItemColor: Colors.deepPurple,
+          unselectedItemColor: Colors.grey,
+          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.account_circle),
+              label: "Cuenta",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.translate),
+              label: "Traductor",
+            ),
+          ],
+        ),
       ),
     );
   }
